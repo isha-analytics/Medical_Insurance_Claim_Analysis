@@ -16,7 +16,7 @@ st.set_page_config(page_title="Insurance Claim Dashboard",layout="wide")
 # -----------------------------
 st.sidebar.title("Dataset")
 
-default_path = r"C:\Users\Admin\Desktop\HCL\Project\Insurance claim Analysis.csv"
+default_path = r"Insurance claim Analysis.csv"
 
 try:
     df = pd.read_csv(default_path)
