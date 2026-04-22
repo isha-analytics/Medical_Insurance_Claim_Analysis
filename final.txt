@@ -1,0 +1,217 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df=pd.read_csv(r"C:\Users\Admin\Desktop\HCL\Project\Insurance claim Analysis.csv")
+
+df.info()
+
+df.head()
+
+df.tail()
+
+df.shape
+
+df.columns
+
+df.dtypes
+
+df.describe()
+
+df.isnull().sum()
+
+df.duplicated().sum()
+
+df['policy_type'].unique()
+
+df['state'].nunique()
+
+df['gender'].value_counts()
+
+df.groupby('gender')['total_claim_amount'].mean()
+
+df.sort_values(by='total_claim_amount',ascending=False).head()
+
+np.max(df['hospital_bill_amount'])
+
+np.max(df['total_claim_amount'])
+
+np.min(df['total_claim_amount'])
+
+# Visualization
+
+# 1. Which Age Group Makes More Claims
+df['age']=pd.to_numeric(df['age'],errors='coerce')
+
+bins =[0,25,35,45,55,65,100]
+labels=['18-25','26-35','36-45','46-55','56-65','65+']
+df['age_group']=pd.cut(df['age'],bins=bins,labels=labels)
+age_claim=df.groupby('age_group')['total_claim_amount'].sum().reset_index()
+sns.barplot(x='age_group',y='total_claim_amount',data=age_claim,color='orange')
+plt.title('Claim Amount by Age Group')
+plt.xlabel("Age Group")
+plt.ylabel("Total Claim Amount")
+plt.ticklabel_format(style='plain',axis='y')
+plt.show()
+
+# Conclusion : 36-45 Age group makes more claim
+
+# 2. Which Hospital Generates Highest Claim Amount
+hospital_claim = df.groupby('hospital_name')['total_claim_amount'].sum().sort_values(ascending=False).head(10)
+
+hospital_claim.plot(kind='bar',color='green')
+plt.title("Top Hospitals by Claim Amount")
+plt.xlabel("Hospital")
+plt.ylabel("Claim Amount")
+plt.ticklabel_format(style='plain',axis='y')
+plt.show()
+
+# Conclusion :  Kala, Gandhi And Nayar Hospital Generates Claim Amount
+
+# 3. Which Occupation Category Files The Highest Number Of Insurance  Claims ?
+occupation_count = df['occupation_type'].value_counts().reset_index()
+occupation_count.columns = ['occupation_type','count']
+
+sns.barplot(x='occupation_type', y='count', data=occupation_count,hue='occupation_type',palette='Set2',legend=False)
+
+plt.title("Number of Claims by Occupation")
+plt.xlabel("Occupation_type")
+plt.ylabel("Number of Claims")
+
+plt.xticks(rotation=45)
+
+plt.show()
+
+# Conclusion : Unemployed And Student Categories Generate Slightly More Claims
+
+# 4. Does Gender Influence The Number Of Claims?
+gender_count=df['gender'].value_counts().reset_index()
+gender_count.columns=['gender','count']
+sns.barplot(x='gender',y='count',data=gender_count,hue='gender',palette='Set2',legend=False)
+plt.title("Number of Claims by Gender")
+plt.xlabel("Gender")
+plt.ylabel("Nuymber of Claims")
+plt.show()
+
+# Conclusion : Male And Female Policyholders Have Almost Similar Numbers Of Claims
+
+ # 5. Which city has the highest number of patients filing insurance claims?
+city_claim = df['city'].value_counts().head(10).reset_index()
+city_claim.columns = ['city','claims']
+
+sns.barplot(x='city', y='claims', data=city_claim,hue='city',palette='Set2',legend=False)
+
+plt.title("Top Cities by Number of Claims")
+plt.xticks(rotation=45)
+plt.show()
+
+# Conclusion : Kolkata And  New Delhi has the highest number of patients filing insurance claims
+
+# 6. Which policy type has the highest number of claims?
+policy_claim = df['policy_type'].value_counts().reset_index()
+policy_claim.columns = ['policy_type','claims']
+
+sns.barplot(x='policy_type', y='claims', data=policy_claim,color='violet')
+
+plt.title("Number of Claims by Policy Type")
+plt.show()
+
+#  Conclusion : Individual policy type has the highest number of claims
+
+df['claim_date']= pd.to_datetime(df['claim_date'])
+
+# 7. How does the total claim amount vary month-by-month?
+df['month']=df['claim_date'].dt.month_name()
+monthly_amount=df.groupby('month')['total_claim_amount'].sum()
+monthly_amount.plot(kind='line',marker='o',color='peru')
+plt.xticks(rotation=45)
+plt.show()
+
+# Conclusion : January month have high number of claims
+
+# 8. Which diet type has the highest number of insurance claims?
+diet_claim=df['diet_type'].value_counts()
+diet_claim.plot(kind='pie',autopct='%1.1f%%')
+plt.title('Claims Distribution by Diet Type')
+plt.ylabel("")
+plt.show()
+
+#  Conclusion : Vegan And Non-Vegetarian  Diet_tye Have Almost Similar Number Of Insurance Claims.
+
+# 9. Is there a relationship between ICU days and total hospital stay?
+sns.scatterplot(x='icu_days',y='length_of_stay',data=df,color='red')
+plt.title("ICU days VS Length of stay")
+plt.show()
+
+# Conclusion : Yes patients who spend more days in ICU generally have longer stays.
+
+# 10. How does the number of  insurance claims change across different years?
+df['claim_date']=pd.to_datetime(df['claim_date'])
+year_claim=df.groupby(df['claim_date'].dt.year).size()
+year_claim.plot(kind='line',marker='o',color='indigo')
+plt.title("Number of Claims by Year")
+plt.xlabel("Year")
+plt.ylabel("Number of Claims")
+plt.show()
+
+# Conclusion : 2018 to 2024 claims are increasing  & 2025 to 2028 claims are decreasing
+
+# 11. Which agent channel generates the highest number of claims?
+agent_claim = df['agent_channel'].value_counts().reset_index()
+agent_claim.columns = ['agent_channel','claims']
+
+sns.barplot(x='agent_channel', y='claims', data=agent_claim,hue='agent_channel',palette='Set2',legend=False)
+
+plt.title("Claims by Agent Channel")
+
+plt.show()
+
+# Conclusion :  Aggregator agent channel generates the highest number of claims
+
+# 12. Do physically active individuals file fewer insurance claims?
+activity_claim = df['physical_activity_level'].value_counts().reset_index()
+activity_claim.columns = ['physical_activity_level','claims']
+
+sns.barplot(x='physical_activity_level', y='claims', data=activity_claim,color='purple')
+
+plt.title("Claims by Physical Activity Level")
+
+plt.show()
+
+# Conclusion : High physically active individuals file fewer insurance claims
+
+# 13. Which hospital tier has the highest total claim amount?
+hospital_claim = df.groupby('hospital_tier')['total_claim_amount'].sum().reset_index()
+
+sns.barplot(x='hospital_tier', y='total_claim_amount', data=hospital_claim,color='turquoise')
+
+plt.title("Total Claim Amount by Hospital Tier")
+plt.xlabel("Hospital Tier")
+plt.ylabel("Total Claim Amount")
+plt.ticklabel_format(style='plain',axis='y')
+plt.show()
+
+# Conclusion : Private Corporate hospital tier has the highest total claim amount
+
+# 14. Do longer hospital stays result in higher claim amounts?
+sns.scatterplot(x='length_of_stay', y='total_claim_amount', data=df, color='blue')
+
+plt.title("Length of Stay vs Total Claim Amount")
+plt.xlabel("Length of Stay")
+plt.ylabel("Total Claim Amount")
+plt.ticklabel_format(style='plain',axis='y')
+
+plt.show()
+
+# Conclusion Longer hospital stays generally lead to higher total insurance claim amounts.
+
+# 15. What is the distribution of claim amounts?
+sns.histplot(df['total_claim_amount'], bins=30,color='darkgray')
+
+plt.title("Distribution of Total Claim Amount")
+plt.ticklabel_format(style='plain',axis='x')
+
+plt.show()
+
+# Conclusion : Most claims fall within 0-200000 cost range
