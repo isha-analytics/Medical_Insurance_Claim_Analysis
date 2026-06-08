@@ -20,4 +20,5 @@ This project focuses on analyzing medical insurance claim data to identify facto
 ## Project Link
 https://medicalinsuranceclaimanalysis-qfjsyjuxaappqv2mz2ba68v.streamlit.app/
 
-
+## Dashboard Screenshot
+dashboard.png
